@@ -26,9 +26,16 @@
     z-index: 5;
 }
 
+.clouds {
+    position: absolute;
+    width: 550px;
+    animation: clouds-animation 20s infinite linear;
+}
+
 .pipe {
     position: absolute;
     bottom: 0;
+    right: -80px; /* Garante que começa fora do ecrã à direita */
     width: 80px;
     animation: pipe-animation 1.5s infinite linear;
 }
@@ -37,6 +44,7 @@
     width: 150px;
     position: absolute;
     bottom: 0;
+    left: 50px;
 }
 
 .jump {
