@@ -27,17 +27,25 @@ const jump = (event) => {
 }
 
 const loop = setInterval(() => {
-    const pipePosition = pipe.offsetLeft;
-    const marioPosition = +window.getComputedStyle(mario).bottom.replace('px', '');
+    const pipeRight = +window.getComputedStyle(pipe).right.replace('px', '');
+    const marioBottom = +window.getComputedStyle(mario).bottom.pxToNum ? parseInt(window.getComputedStyle(mario).bottom) : +window.getComputedStyle(mario).bottom.replace('px', '');
 
-    if (pipePosition <= 120 && pipePosition > 0 && marioPosition < 80) {
+    // Condição de colisão ajustada para propriedades right/bottom
+    // O cano está posicionado à esquerda em cerca de (window.innerWidth - pipeRight - larguraDoCano)
+    const boardWidth = document.querySelector('.game-board').offsetWidth;
+    const pipeLeft = boardWidth - pipeRight - 80; 
+
+    const marioPositionLeft = 50; // Definido no CSS (.mario { left: 50px; })
+
+    // Detetar colisão (cano na mesma faixa horizontal do Mário e Mário no chão)
+    if (pipeRight >= (boardWidth - 130) && pipeRight <= (boardWidth - 50) && marioBottom < 80) {
         isGameOver = true;
 
         pipe.style.animation = 'none';
-        pipe.style.left = `${pipePosition}px`;
+        pipe.style.right = `${pipeRight}px`;
 
         mario.style.animation = 'none';
-        mario.style.bottom = `${marioPosition}px`;
+        mario.style.bottom = `${marioBottom}px`;
 
         mario.src = './img/game-over.png';
         mario.style.width = '75px';
@@ -49,13 +57,14 @@ const loop = setInterval(() => {
         return;
     }
 
-    if (pipePosition < 0 && !hasPassedPipe && !isGameOver) {
+    // Sistema de Pontuação
+    if (pipeRight > boardWidth && !hasPassedPipe && !isGameOver) {
         score += 50;
         scoreValue.textContent = score;
         hasPassedPipe = true;
     }
 
-    if (pipePosition > 200) {
+    if (pipeRight < boardWidth - 300) {
         hasPassedPipe = false;
     }
 
@@ -65,4 +74,8 @@ const restartGame = () => {
     location.reload();
 }
 
-document.addEventListener('keydown', jump);
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' || e.code === 'ArrowUp') {
+        jump(e);
+    }
+});
